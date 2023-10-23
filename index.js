@@ -14,17 +14,19 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 const jwt = require("jsonwebtoken");
 
-mongoose
-  .connect("mongodb+srv://shahzaibmehmood65:shahzaibmehmood65@cluster0.qnrxqci.mongodb.net/ChatMate?retryWrites=true&w=majority", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("Connected to Mongo Db");
-  })
-  .catch((err) => {
-    console.log("Error connecting to MongoDb", err);
-  });
+
+const connectDatabase = async () => {
+  try {
+    
+    await mongoose.connect("mongodb+srv://shahzaibmehmood65:shahzaibmehmood65@cluster0.qnrxqci.mongodb.net/ChatMate?retryWrites=true&w=majority");
+    console.log("connected to database");
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
+};
+
+connectDatabase();
 
 app.listen(port, () => {
   console.log("Server running on port 8000");
@@ -66,7 +68,7 @@ const createToken = (userId) => {
 };
 
 //endpoint for logging in of that particular user
-app.post("/login", (req, res) => {
+app.post("/login", async(req, res) => {
   const { email, password } = req.body;
 
   //check if the email and password are provided
@@ -77,7 +79,7 @@ app.post("/login", (req, res) => {
   }
 
   //check for that user in the database
-  User.findOne({ email })
+ await User.findOne({ email: req.body.email })
     .then((user) => {
       if (!user) {
         //user not found
