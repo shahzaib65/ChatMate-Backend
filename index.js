@@ -94,7 +94,7 @@ app.post("/login", (req, res) => {
     })
     .catch((error) => {
       console.log("error in finding the user", error);
-      res.status(500).json({ message: "Internal server Error!" });
+      res.status(500).json({ message: error.message });
     });
 });
 
